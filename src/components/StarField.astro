@@ -1,0 +1,59 @@
+---
+// src/components/StarField.astro
+// Renders a canvas-based animated star field as a fixed background
+---
+
+<canvas id="starfield" class="star-canvas" aria-hidden="true"></canvas>
+
+<script>
+(function () {
+  const canvas = document.getElementById('starfield') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  interface Star {
+    x: number; y: number;
+    r: number; opacity: number;
+    speed: number; phase: number;
+  }
+
+  let stars: Star[] = [];
+  let W = 0, H = 0;
+  let raf: number;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    const count = Math.floor((W * H) / 6000);
+    stars = Array.from({ length: count }, () => ({
+      x:       Math.random() * W,
+      y:       Math.random() * H,
+      r:       Math.random() * 1.4 + 0.2,
+      opacity: Math.random() * 0.7 + 0.2,
+      speed:   Math.random() * 0.008 + 0.002,
+      phase:   Math.random() * Math.PI * 2,
+    }));
+  }
+
+  function draw(t: number) {
+    ctx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      const alpha = s.opacity * (0.6 + 0.4 * Math.sin(t * s.speed + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,220,255,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+  raf = requestAnimationFrame(draw);
+})();
+</script>

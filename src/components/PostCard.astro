@@ -1,0 +1,45 @@
+---
+// src/components/PostCard.astro
+interface Props {
+  title:       string;
+  description: string;
+  href:        string;
+  category?:   string;
+  date?:       Date;
+  image?:      string;
+  rating?:     number;
+  featured?:   boolean;
+}
+
+const { title, description, href, category, date, image, rating, featured } = Astro.props;
+const dateStr = date?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<a href={href} class:list={['card block group no-underline', featured && 'border-nebula-blue/30']}>
+  {image && (
+    <img src={image} alt={title}
+         class="w-full aspect-video object-cover rounded-lg mb-4 group-hover:opacity-90 transition-opacity" />
+  )}
+  <div>
+    {category && (
+      <p class="font-sans text-xs font-semibold tracking-widest uppercase text-nebula-teal/80 mb-2">
+        {category.replace(/-/g, ' ')}
+      </p>
+    )}
+    <h3 class="font-display text-xl text-star-white font-bold leading-snug mb-2
+               group-hover:text-star-gold transition-colors">
+      {title}
+    </h3>
+    <p class="text-star-silver/60 text-sm leading-relaxed line-clamp-2 mb-3">
+      {description}
+    </p>
+    <div class="flex items-center justify-between">
+      {dateStr && <span class="font-sans text-xs text-star-silver/40">{dateStr}</span>}
+      {rating && (
+        <span class="font-sans text-xs text-star-gold">
+          {'★'.repeat(Math.round(rating))} {rating}/5
+        </span>
+      )}
+    </div>
+  </div>
+</a>

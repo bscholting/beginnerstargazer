@@ -1,0 +1,19 @@
+---
+// src/components/ProsConsBox.astro
+interface Props { pros: string[]; cons: string[]; }
+const { pros, cons } = Astro.props;
+---
+<div class="pros-cons my-8">
+  <ul class="pros">
+    <li class="font-semibold text-nebula-teal text-xs uppercase tracking-wide pb-2 list-none !before:content-none">
+      Pros
+    </li>
+    {pros.map(p => <li>{p}</li>)}
+  </ul>
+  <ul class="cons">
+    <li class="font-semibold text-red-400 text-xs uppercase tracking-wide pb-2 list-none !before:content-none">
+      Cons
+    </li>
+    {cons.map(c => <li>{c}</li>)}
+  </ul>
+</div>

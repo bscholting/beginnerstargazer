@@ -1,0 +1,182 @@
+---
+// src/pages/index.astro
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const featuredReviews = (await getCollection('reviews', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const featuredPosts = (await getCollection('posts', ({ data }) => !data.draft && data.featured))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const categories = [
+  { icon: '🔭', label: 'Telescope Reviews',    href: '/reviews',              desc: 'Honest, tested reviews for every budget' },
+  { icon: '⚖️', label: 'Comparisons',          href: '/comparisons',          desc: 'Side-by-side to help you decide' },
+  { icon: '📖', label: 'Buying Guides',         href: '/guides',               desc: 'Exactly what to look for and avoid' },
+  { icon: '🌌', label: 'What Can I See?',       href: '/what-can-you-see',     desc: 'By aperture, by object, by planet' },
+  { icon: '🔧', label: 'How-To Guides',         href: '/how-to',               desc: 'Collimate, align, clean — done right' },
+  { icon: '🗺️', label: 'Dark Sky Locations',   href: '/guides/dark-sky',      desc: 'Find the best skies near you' },
+];
+---
+
+<Base
+  title="Home"
+  description="Honest telescope reviews and beginner stargazing guides. Find the right telescope, learn what you can see, and get outside under the stars."
+>
+
+  <!-- ── Hero ──────────────────────────────────────────────── -->
+  <section class="relative pt-24 pb-20 overflow-hidden">
+    <!-- Nebula glow overlay -->
+    <div class="absolute inset-0 bg-nebula-glow pointer-events-none" aria-hidden="true"></div>
+
+    <div class="container-narrow relative text-center">
+      <p class="animate-fade-up font-sans text-xs font-semibold tracking-widest uppercase
+                text-nebula-teal mb-6">
+        Telescope reviews & stargazing guides
+      </p>
+      <h1 class="animate-fade-up delay-1 font-display text-5xl md:text-7xl
+                 text-star-white font-black leading-[1.05] mb-6">
+        The night sky is
+        <span class="text-star-gold glow-gold block">waiting for you.</span>
+      </h1>
+      <p class="animate-fade-up delay-2 text-xl text-star-silver/70 max-w-xl mx-auto
+                leading-relaxed mb-10">
+        No jargon. No fluff. Just honest reviews and clear guides
+        so you can buy with confidence and actually enjoy stargazing.
+      </p>
+      <div class="animate-fade-up delay-3 flex flex-wrap gap-3 justify-center">
+        <a href="/quiz"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+                  bg-star-gold text-space-950 font-sans font-semibold
+                  hover:bg-star-gold/90 transition-colors no-underline">
+          Find My Perfect Telescope →
+        </a>
+        <a href="/reviews"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+                  border border-white/20 text-star-silver/80 font-sans
+                  hover:border-white/40 hover:text-star-white transition-colors no-underline">
+          Browse All Reviews
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Category grid ─────────────────────────────────────── -->
+  <section class="py-16">
+    <div class="container-wide">
+      <h2 class="font-display text-3xl text-star-white text-center mb-10">
+        What are you looking for?
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {categories.map(({ icon, label, href, desc }) => (
+          <a href={href}
+             class="card flex items-start gap-4 no-underline group">
+            <span class="text-3xl flex-shrink-0 group-hover:animate-float">{icon}</span>
+            <div>
+              <h3 class="font-display text-lg text-star-white font-bold mb-1
+                         group-hover:text-star-gold transition-colors">{label}</h3>
+              <p class="font-sans text-sm text-star-silver/60">{desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Trust bar ─────────────────────────────────────────── -->
+  <section class="py-10 border-y border-white/8 bg-space-900/30">
+    <div class="container-wide">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        {[
+          { stat: '50+',  label: 'Telescopes reviewed' },
+          { stat: '100%', label: 'Independent reviews' },
+          { stat: '0',    label: 'Paid placements' },
+          { stat: '★★★★★', label: 'Reader trust' },
+        ].map(({ stat, label }) => (
+          <div>
+            <p class="font-display text-3xl text-star-gold font-bold mb-1">{stat}</p>
+            <p class="font-sans text-sm text-star-silver/50">{label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Latest reviews ────────────────────────────────────── -->
+  {featuredReviews.length > 0 && (
+    <section class="py-16">
+      <div class="container-wide">
+        <div class="flex items-end justify-between mb-8">
+          <h2 class="font-display text-3xl text-star-white">Latest Reviews</h2>
+          <a href="/reviews" class="font-sans text-sm text-nebula-blue hover:text-star-gold transition-colors">
+            View all →
+          </a>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          {featuredReviews.map(review => (
+            <PostCard
+              title={review.data.title}
+              description={review.data.description}
+              href={`/reviews/${review.slug}`}
+              category="Review"
+              date={review.data.pubDate}
+              rating={review.data.rating}
+              image={review.data.image?.src}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ── Quiz CTA ───────────────────────────────────────────── -->
+  <section class="py-16">
+    <div class="container-narrow text-center">
+      <div class="card border-nebula-blue/30 py-12">
+        <span class="text-5xl mb-4 block animate-float">🌠</span>
+        <h2 class="font-display text-4xl text-star-white font-bold mb-4">
+          Not sure where to start?
+        </h2>
+        <p class="text-star-silver/70 text-lg max-w-md mx-auto mb-8 leading-relaxed">
+          Answer 5 quick questions and we'll tell you exactly which telescope
+          is right for your budget and goals.
+        </p>
+        <a href="/quiz"
+           class="inline-flex items-center gap-2 px-8 py-4 rounded-xl
+                  bg-star-gold text-space-950 font-sans font-bold text-lg
+                  hover:bg-star-gold/90 transition-colors no-underline">
+          Take the Sky Readiness Quiz →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Featured guides ───────────────────────────────────── -->
+  {featuredPosts.length > 0 && (
+    <section class="py-16">
+      <div class="container-wide">
+        <div class="flex items-end justify-between mb-8">
+          <h2 class="font-display text-3xl text-star-white">Popular Guides</h2>
+          <a href="/guides" class="font-sans text-sm text-nebula-blue hover:text-star-gold transition-colors">
+            View all →
+          </a>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          {featuredPosts.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              href={`/guides/${post.slug}`}
+              category={post.data.category}
+              date={post.data.pubDate}
+              image={post.data.image?.src}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>

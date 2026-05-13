@@ -1,0 +1,41 @@
+---
+// src/pages/guides/index.astro
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts', ({ data }) =>
+  !data.draft && ['buying-guide','stargazing-guide','worth-it','astrophotography'].includes(data.category)
+)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Base
+  title="Buying Guides"
+  description="Clear, jargon-free buying guides and stargazing resources for beginners."
+>
+  <section class="pt-16 pb-24">
+    <div class="container-wide">
+      <header class="text-center mb-14 animate-fade-up">
+        <h1 class="font-display text-5xl text-star-white font-bold mb-4">Buying Guides</h1>
+        <p class="text-star-silver/70 text-lg max-w-lg mx-auto">
+          Everything you need to make a confident purchase — without wading through specs you don't need.
+        </p>
+      </header>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/guides/${post.slug}`}
+            category={post.data.category}
+            date={post.data.pubDate}
+            image={post.data.image?.src}
+          />
+        ))}
+        {posts.length === 0 && (
+          <p class="col-span-3 text-center text-star-silver/50 font-sans py-20">Guides coming soon!</p>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>

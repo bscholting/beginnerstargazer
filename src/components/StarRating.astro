@@ -1,0 +1,14 @@
+---
+// src/components/StarRating.astro
+interface Props { rating: number; size?: 'sm' | 'md' | 'lg'; }
+const { rating, size = 'md' } = Astro.props;
+const full  = Math.floor(rating);
+const half  = rating % 1 >= 0.5 ? 1 : 0;
+const empty = 5 - full - half;
+const sz = { sm: 'text-base', md: 'text-xl', lg: 'text-2xl' }[size];
+---
+<div class={`star-rating ${sz}`} aria-label={`${rating} out of 5 stars`}>
+  {'★'.repeat(full)}
+  {half ? '⭐' : ''}
+  {'☆'.repeat(empty)}
+</div>

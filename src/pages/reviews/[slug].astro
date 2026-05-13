@@ -1,0 +1,37 @@
+---
+// src/pages/reviews/[slug].astro
+import Review from '../../layouts/Review.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const reviews = await getCollection('reviews', ({ data }) => !data.draft);
+  return reviews.map(r => ({ params: { slug: r.slug }, props: { review: r } }));
+}
+
+const { review } = Astro.props;
+const { Content } = await review.render();
+const d = review.data;
+---
+
+<Review
+  title={d.title}
+  description={d.description}
+  pubDate={d.pubDate}
+  updatedDate={d.updatedDate}
+  productName={d.productName}
+  brand={d.brand}
+  price={d.price}
+  rating={d.rating}
+  verdict={d.verdict}
+  affiliateUrl={d.affiliateUrl}
+  affiliateStore={d.affiliateStore}
+  whoIsItFor={d.whoIsItFor}
+  whoShouldSkip={d.whoShouldSkip}
+  bestAlternative={d.bestAlternative}
+  pros={d.pros}
+  cons={d.cons}
+  image={d.image}
+  specs={d.specs as Record<string, string> | undefined}
+>
+  <Content />
+</Review>

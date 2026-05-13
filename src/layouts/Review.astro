@@ -1,0 +1,188 @@
+---
+// src/layouts/Review.astro
+import Base from './Base.astro';
+import ProductBox from '../components/ProductBox.astro';
+import ProsConsBox from '../components/ProsConsBox.astro';
+import StarRating from '../components/StarRating.astro';
+
+interface Props {
+  title:          string;
+  description:    string;
+  pubDate:        Date;
+  updatedDate?:   Date;
+  productName:    string;
+  brand:          string;
+  price:          number;
+  rating:         number;
+  verdict:        'recommended' | 'good-value' | 'avoid' | 'best-in-class';
+  affiliateUrl:   string;
+  affiliateStore: string;
+  whoIsItFor:     string;
+  whoShouldSkip:  string;
+  bestAlternative?:string;
+  pros:           string[];
+  cons:           string[];
+  image?:         { src: string; alt: string };
+  specs?:         Record<string, string>;
+}
+
+const {
+  title, description, pubDate, updatedDate,
+  productName, brand, price, rating, verdict,
+  affiliateUrl, affiliateStore,
+  whoIsItFor, whoShouldSkip, bestAlternative,
+  pros, cons, image, specs,
+} = Astro.props;
+
+const verdictLabel = {
+  'recommended':   '★ Recommended',
+  'good-value':    '💰 Good Value',
+  'avoid':         '✗ Avoid',
+  'best-in-class': '🏆 Best in Class',
+}[verdict];
+
+const schemaDate   = pubDate.toISOString();
+const schemaUpdate = (updatedDate ?? pubDate).toISOString();
+---
+
+<Base title={title} description={description} type="article" pubDate={pubDate} image={image?.src}>
+
+  <!-- Review Schema (rich snippet for star ratings in Google) -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type":    "Review",
+    "itemReviewed": {
+      "@type":  "Product",
+      "name":   productName,
+      "brand":  { "@type": "Brand", "name": brand },
+      "offers": {
+        "@type":         "Offer",
+        "price":         price,
+        "priceCurrency": "USD",
+        "availability":  "https://schema.org/InStock",
+        "url":           affiliateUrl,
+      },
+    },
+    "reviewRating": {
+      "@type":       "Rating",
+      "ratingValue": rating,
+      "bestRating":  5,
+      "worstRating": 1,
+    },
+    "author":       { "@type": "Organization", "name": "BeginnerStargazer" },
+    "publisher":    { "@type": "Organization", "name": "BeginnerStargazer", "url": "https://beginnerstargazer.com" },
+    "datePublished": schemaDate,
+    "dateModified":  schemaUpdate,
+    "description":   description,
+  })} />
+
+  <article class="pt-16 pb-24">
+    <header class="container-narrow mb-10 animate-fade-up">
+      <p class="font-sans text-xs font-semibold tracking-widest uppercase text-nebula-teal mb-3">
+        Telescope Review
+      </p>
+      <h1 class="font-display text-4xl md:text-5xl text-star-white leading-tight mb-4">
+        {title}
+      </h1>
+      <div class="flex flex-wrap items-center gap-4 mb-5">
+        <StarRating rating={rating} />
+        <span class="text-star-silver/60 font-sans text-sm">{rating}/5</span>
+        <span class={`verdict-badge ${verdict}`}>{verdictLabel}</span>
+      </div>
+      <p class="text-lg text-star-silver/80 leading-relaxed">{description}</p>
+    </header>
+
+    <!-- Quick verdict card -->
+    <div class="container-narrow mb-10 animate-fade-up delay-1">
+      <div class="card grid md:grid-cols-3 gap-4 text-sm font-sans">
+        <div>
+          <p class="text-nebula-teal font-semibold text-xs uppercase tracking-wide mb-1">Who it's for</p>
+          <p class="text-star-silver/80">{whoIsItFor}</p>
+        </div>
+        <div>
+          <p class="text-red-400 font-semibold text-xs uppercase tracking-wide mb-1">Who should skip it</p>
+          <p class="text-star-silver/80">{whoShouldSkip}</p>
+        </div>
+        {bestAlternative && (
+          <div>
+            <p class="text-star-gold font-semibold text-xs uppercase tracking-wide mb-1">Best alternative</p>
+            <p class="text-star-silver/80">{bestAlternative}</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {image && (
+      <div class="container-wide mb-10 animate-fade-up delay-1">
+        <img src={image.src} alt={image.alt}
+          class="w-full rounded-xl aspect-[2/1] object-cover" loading="eager" />
+      </div>
+    )}
+
+    <!-- Affiliate box -->
+    <div class="container-narrow animate-fade-up delay-2">
+      <ProductBox
+        name={productName}
+        price={price}
+        rating={rating}
+        affiliateUrl={affiliateUrl}
+        store={affiliateStore}
+      />
+    </div>
+
+    <!-- Pros / Cons -->
+    <div class="container-narrow animate-fade-up delay-2">
+      <ProsConsBox pros={pros} cons={cons} />
+    </div>
+
+    <!-- Specs table -->
+    {specs && Object.keys(specs).length > 0 && (
+      <div class="container-narrow mb-8 animate-fade-up delay-3">
+        <h2 class="font-display text-2xl text-star-white mb-4">Specifications</h2>
+        <table class="w-full text-sm font-sans border-collapse">
+          {Object.entries(specs).map(([key, val]) => (
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-4 text-star-silver/50 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</td>
+              <td class="py-2 text-star-white font-medium">{val}</td>
+            </tr>
+          ))}
+        </table>
+      </div>
+    )}
+
+    <!-- Review body -->
+    <div class="container-narrow animate-fade-up delay-3">
+      <div class="prose prose-stargazer max-w-none
+                  prose-headings:font-display prose-headings:text-star-white
+                  prose-p:text-star-silver prose-p:leading-relaxed
+                  prose-a:text-nebula-blue prose-a:no-underline hover:prose-a:text-star-gold
+                  prose-strong:text-star-white prose-li:text-star-silver
+                  prose-blockquote:border-nebula-purple
+                  prose-code:text-star-gold prose-code:bg-space-800 prose-code:px-1 prose-code:rounded
+                  prose-img:rounded-lg prose-hr:border-white/10">
+        <slot />
+      </div>
+
+      <!-- Bottom affiliate box -->
+      <div class="mt-12">
+        <ProductBox
+          name={productName}
+          price={price}
+          rating={rating}
+          affiliateUrl={affiliateUrl}
+          store={affiliateStore}
+        />
+      </div>
+
+      <!-- Disclosure -->
+      <div class="mt-8 pt-6 border-t border-white/10">
+        <p class="text-xs text-star-silver/40 font-sans leading-relaxed">
+          <strong class="text-star-silver/60">Disclosure:</strong> BeginnerStargazer is reader-supported.
+          When you purchase through links on this site, we may earn a small affiliate commission
+          at no extra cost to you. Our reviews are independent and honest — we only recommend
+          products we genuinely believe are worth buying.
+        </p>
+      </div>
+    </div>
+  </article>
+</Base>

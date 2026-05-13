@@ -1,0 +1,97 @@
+---
+// src/components/Header.astro
+const nav = [
+  { label: 'Reviews',       href: '/reviews' },
+  { label: 'Comparisons',   href: '/comparisons' },
+  { label: 'Buying Guides', href: '/guides' },
+  { label: 'What Can I See?', href: '/what-can-you-see' },
+  { label: 'How-To',        href: '/how-to' },
+];
+
+const current = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 border-b border-white/8
+               bg-space-950/80 backdrop-blur-md">
+  <div class="container-wide flex items-center justify-between h-16 gap-6">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2.5 group no-underline" aria-label="BeginnerStargazer home">
+      <span class="text-2xl group-hover:animate-float" aria-hidden="true">🔭</span>
+      <div class="leading-tight">
+        <span class="font-display text-lg text-star-white font-bold tracking-tight">
+          Beginner<span class="text-star-gold">Stargazer</span>
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+      {nav.map(({ label, href }) => {
+        const active = current.startsWith(href);
+        return (
+          <a
+            href={href}
+            class:list={[
+              'px-3 py-1.5 rounded-lg font-sans text-sm transition-colors duration-150',
+              active
+                ? 'text-star-gold bg-star-gold/10'
+                : 'text-star-silver/70 hover:text-star-white hover:bg-white/5',
+            ]}
+          >
+            {label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- CTA -->
+    <a href="/quiz"
+       class="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-lg
+              bg-star-gold text-space-950 font-sans text-sm font-semibold
+              hover:bg-star-gold/90 transition-colors duration-150 no-underline">
+      Find My Telescope
+    </a>
+
+    <!-- Mobile menu button -->
+    <button
+      id="menu-toggle"
+      class="lg:hidden p-2 rounded-lg text-star-silver/70 hover:text-star-white
+             hover:bg-white/5 transition-colors"
+      aria-label="Toggle navigation menu"
+      aria-expanded="false"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden lg:hidden border-t border-white/8 bg-space-950/95">
+    <nav class="container-wide py-4 flex flex-col gap-1" aria-label="Mobile navigation">
+      {nav.map(({ label, href }) => (
+        <a href={href}
+           class="px-3 py-2.5 rounded-lg font-sans text-sm text-star-silver/80
+                  hover:text-star-white hover:bg-white/5 transition-colors">
+          {label}
+        </a>
+      ))}
+      <a href="/quiz"
+         class="mt-2 px-3 py-2.5 rounded-lg font-sans text-sm font-semibold
+                bg-star-gold text-space-950 text-center no-underline">
+        Find My Telescope →
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu   = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+</script>

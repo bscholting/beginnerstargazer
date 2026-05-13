@@ -1,0 +1,120 @@
+---
+// src/layouts/Article.astro
+import Base from './Base.astro';
+
+interface Props {
+  title:       string;
+  description: string;
+  pubDate:     Date;
+  updatedDate?:Date;
+  author?:     string;
+  image?:      { src: string; alt: string };
+  category?:   string;
+  readingTime?:number;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  author      = 'BeginnerStargazer Team',
+  image,
+  category,
+  readingTime,
+} = Astro.props;
+
+const displayDate  = (updatedDate ?? pubDate).toLocaleDateString('en-US', {
+  year: 'month', month: 'long', day: 'numeric',
+});
+const schemaDate   = pubDate.toISOString();
+const schemaUpdate = (updatedDate ?? pubDate).toISOString();
+---
+
+<Base title={title} description={description} type="article" pubDate={pubDate} image={image?.src}>
+  <!-- Article Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context":       "https://schema.org",
+    "@type":          "Article",
+    "headline":       title,
+    "description":    description,
+    "author":         { "@type": "Person", "name": author },
+    "publisher":      {
+      "@type": "Organization",
+      "name":  "BeginnerStargazer",
+      "url":   "https://beginnerstargazer.com"
+    },
+    "datePublished":  schemaDate,
+    "dateModified":   schemaUpdate,
+    "image":          image?.src,
+  })} />
+
+  <article class="pt-16 pb-24">
+    <!-- Hero -->
+    <header class="container-narrow mb-12 animate-fade-up">
+      {category && (
+        <p class="font-sans text-xs font-semibold tracking-widest uppercase text-nebula-teal mb-4">
+          {category.replace(/-/g, ' ')}
+        </p>
+      )}
+      <h1 class="font-display text-4xl md:text-5xl text-star-white leading-tight mb-6">
+        {title}
+      </h1>
+      <p class="text-lg text-star-silver/80 leading-relaxed mb-6">{description}</p>
+      <div class="flex items-center gap-4 text-sm text-star-silver/50 font-sans border-t border-white/10 pt-4">
+        <span>By {author}</span>
+        <span>·</span>
+        <time datetime={schemaDate}>{displayDate}</time>
+        {readingTime && (
+          <>
+            <span>·</span>
+            <span>{readingTime} min read</span>
+          </>
+        )}
+        {updatedDate && (
+          <>
+            <span>·</span>
+            <span class="text-star-gold/70">Updated</span>
+          </>
+        )}
+      </div>
+    </header>
+
+    {image && (
+      <div class="container-wide mb-12 animate-fade-up delay-1">
+        <img
+          src={image.src}
+          alt={image.alt}
+          class="w-full rounded-xl aspect-[2/1] object-cover"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <!-- Content -->
+    <div class="container-narrow animate-fade-up delay-2">
+      <div class="prose prose-stargazer max-w-none
+                  prose-headings:font-display prose-headings:text-star-white
+                  prose-p:text-star-silver prose-p:leading-relaxed
+                  prose-a:text-nebula-blue prose-a:no-underline hover:prose-a:text-star-gold
+                  prose-strong:text-star-white
+                  prose-li:text-star-silver
+                  prose-blockquote:border-nebula-purple prose-blockquote:text-star-silver/80
+                  prose-code:text-star-gold prose-code:bg-space-800 prose-code:px-1 prose-code:rounded
+                  prose-img:rounded-lg
+                  prose-hr:border-white/10">
+        <slot />
+      </div>
+
+      <!-- Affiliate disclosure -->
+      <div class="mt-16 pt-6 border-t border-white/10">
+        <p class="text-xs text-star-silver/40 font-sans leading-relaxed">
+          <strong class="text-star-silver/60">Disclosure:</strong> BeginnerStargazer is reader-supported.
+          When you purchase through links on this site, we may earn a small affiliate commission
+          at no extra cost to you. This helps us keep the site free and the guides coming.
+          We only recommend products we genuinely believe in.
+        </p>
+      </div>
+    </div>
+  </article>
+</Base>

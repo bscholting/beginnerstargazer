@@ -1,0 +1,27 @@
+---
+// src/pages/guides/[slug].astro
+import Article from '../../layouts/Article.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map(p => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const d = post.data;
+---
+
+<Article
+  title={d.title}
+  description={d.description}
+  pubDate={d.pubDate}
+  updatedDate={d.updatedDate}
+  author={d.author}
+  image={d.image}
+  category={d.category}
+  readingTime={d.readingTime}
+>
+  <Content />
+</Article>

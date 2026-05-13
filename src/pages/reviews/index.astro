@@ -1,0 +1,65 @@
+---
+// src/pages/reviews/index.astro
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const reviews = (await getCollection('reviews', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const byType: Record<string, typeof reviews> = {};
+for (const r of reviews) {
+  const t = r.data.productType;
+  if (!byType[t]) byType[t] = [];
+  byType[t].push(r);
+}
+---
+
+<Base
+  title="Telescope Reviews"
+  description="Independent telescope and astronomy gear reviews for beginners. Every product tested and rated honestly."
+>
+  <section class="pt-16 pb-24">
+    <div class="container-wide">
+      <header class="text-center mb-14 animate-fade-up">
+        <p class="font-sans text-xs font-semibold tracking-widest uppercase text-nebula-teal mb-3">
+          Independent reviews
+        </p>
+        <h1 class="font-display text-5xl text-star-white font-bold mb-4">
+          Telescope Reviews
+        </h1>
+        <p class="text-star-silver/70 text-lg max-w-lg mx-auto">
+          Every telescope on this site has been thoroughly researched.
+          We tell you who it's for, who should skip it, and what the best alternative is.
+        </p>
+      </header>
+
+      {Object.entries(byType).map(([type, items]) => (
+        <div class="mb-14">
+          <h2 class="font-display text-2xl text-star-white capitalize mb-6 border-b border-white/10 pb-3">
+            {type.replace(/-/g, ' ')}s
+          </h2>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map(review => (
+              <PostCard
+                title={review.data.title}
+                description={review.data.description}
+                href={`/reviews/${review.slug}`}
+                category={review.data.productType}
+                date={review.data.pubDate}
+                rating={review.data.rating}
+                image={review.data.image?.src}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {reviews.length === 0 && (
+        <p class="text-center text-star-silver/50 font-sans py-20">
+          Reviews coming soon — check back shortly!
+        </p>
+      )}
+    </div>
+  </section>
+</Base>

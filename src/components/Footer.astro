@@ -1,0 +1,79 @@
+---
+// src/components/Footer.astro
+const year = new Date().getFullYear();
+
+const links = {
+  Reviews:  [
+    { label: 'Best Telescopes',          href: '/reviews' },
+    { label: 'Budget Telescopes',         href: '/reviews/budget' },
+    { label: 'Telescopes for Planets',    href: '/reviews/for-planets' },
+    { label: 'Astrophotography',          href: '/reviews/astrophotography' },
+  ],
+  Guides: [
+    { label: 'First Telescope Guide',    href: '/guides/first-telescope' },
+    { label: 'Reflector vs Refractor',   href: '/comparisons/reflector-vs-refractor' },
+    { label: 'Eyepiece Guide',           href: '/guides/eyepieces' },
+    { label: 'Is a Telescope Worth It?', href: '/guides/is-a-telescope-worth-it' },
+  ],
+  'How-To': [
+    { label: 'How to Collimate',         href: '/how-to/collimate-a-telescope' },
+    { label: 'How to Polar Align',       href: '/how-to/polar-align' },
+    { label: 'How to Clean Mirrors',     href: '/how-to/clean-telescope-mirrors' },
+    { label: 'What Can I See Tonight?',  href: '/tools/sky-tonight' },
+  ],
+};
+---
+
+<footer class="border-t border-white/8 bg-space-900/50 mt-16">
+  <div class="container-wide py-16">
+
+    <!-- Top: Brand + links -->
+    <div class="grid md:grid-cols-4 gap-10 mb-12">
+      <!-- Brand -->
+      <div>
+        <a href="/" class="flex items-center gap-2 mb-4 no-underline">
+          <span class="text-2xl">🔭</span>
+          <span class="font-display text-lg text-star-white font-bold">
+            Beginner<span class="text-star-gold">Stargazer</span>
+          </span>
+        </a>
+        <p class="text-star-silver/50 text-sm font-sans leading-relaxed">
+          Honest telescope reviews and stargazing guides for people just starting out.
+          No jargon. Just clear advice.
+        </p>
+      </div>
+
+      <!-- Nav columns -->
+      {Object.entries(links).map(([section, items]) => (
+        <div>
+          <h3 class="font-sans text-xs font-semibold tracking-widest uppercase text-star-gold/70 mb-4">
+            {section}
+          </h3>
+          <ul class="space-y-2.5 list-none p-0 m-0">
+            {items.map(({ label, href }) => (
+              <li>
+                <a href={href}
+                   class="text-sm text-star-silver/60 hover:text-star-white
+                          font-sans transition-colors no-underline">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-white/8 pt-8 flex flex-col sm:flex-row
+                items-center justify-between gap-4 text-xs text-star-silver/40 font-sans">
+      <p>© {year} BeginnerStargazer. All rights reserved.</p>
+      <div class="flex gap-4">
+        <a href="/about"       class="hover:text-star-silver/70 transition-colors">About</a>
+        <a href="/privacy"     class="hover:text-star-silver/70 transition-colors">Privacy</a>
+        <a href="/disclaimer"  class="hover:text-star-silver/70 transition-colors">Affiliate Disclaimer</a>
+        <a href="/contact"     class="hover:text-star-silver/70 transition-colors">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
