@@ -5,7 +5,10 @@ import { render } from 'astro:content';
 
 export async function getStaticPaths() {
   const reviews = await getCollection('reviews', ({ data }) => !data.draft);
-  return reviews.map(r => ({ params: { slug: r.id }, props: { review: r } }));
+  return reviews.map(r => ({
+    params: { slug: r.id.replace(/\.md$/, '') },
+    props: { review: r }
+  }));
 }
 
 const { review } = Astro.props;
