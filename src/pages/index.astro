@@ -120,7 +120,7 @@ const categories = [
             <PostCard
               title={review.data.title}
               description={review.data.description}
-              href={`/reviews/${review.slug}`}
+              href={`/reviews/${review.id}`}
               category="Review"
               date={review.data.pubDate}
               rating={review.data.rating}
@@ -169,7 +169,7 @@ const categories = [
             <PostCard
               title={post.data.title}
               description={post.data.description}
-              href={`/guides/${post.slug}`}
+              href={`/guides/${post.id}`}
               category={post.data.category}
               date={post.data.pubDate}
               image={post.data.image?.src}

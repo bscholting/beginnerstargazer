@@ -26,7 +26,7 @@ const posts = (await getCollection('posts', ({ data }) =>
           <PostCard
             title={post.data.title}
             description={post.data.description}
-            href={`/guides/${post.slug}`}
+            href={`/guides/${post.id}`}
             category={post.data.category}
             date={post.data.pubDate}
             image={post.data.image?.src}
