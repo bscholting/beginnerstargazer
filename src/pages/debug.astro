@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+
+const reviews = await getCollection('reviews');
+const posts = await getCollection('posts');
+---
+
+<html>
+<body>
+  <h2>Reviews</h2>
+  <ul>
+    {reviews.map(r => (
+      <li>id: "{r.id}" → <a href={`/reviews/${r.id.replace(/\.md$/, '')}`}>/reviews/{r.id.replace(/\.md$/, '')}</a></li>
+    ))}
+  </ul>
+  <h2>Posts</h2>
+  <ul>
+    {posts.map(p => (
+      <li>id: "{p.id}" → <a href={`/guides/${p.id.replace(/\.md$/, '')}`}>/guides/{p.id.replace(/\.md$/, '')}</a></li>
+    ))}
+  </ul>
+</body>
+</html>
